@@ -1,13 +1,9 @@
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'RuthWeather.settings')
-
-import django
-django.setup()
-
 import requests
 import datetime
 
 from .models import City,Am,Pm,Eve,Report
+from RuthWeather_React.settings import K
+
 
 ########## LOGIC #############
 
@@ -178,8 +174,20 @@ def get_city(a,b):
     x = City.objects.get(latitude=a,longitude=b)
     return x
 
+
 def generate_new_city(new_city_name):
-    # look up latitude and longitude coordinates for city typed via api?
+    key = keys()
+    ckey = key[0]
+
+    url = 'https://api.opencagedata.com/geocode/v1/json?q={}&key={}'
+    city_data = requests.get(url.format(new_city_name,ckey)).json()
+
+    # new_lat = city_data['lat']
+    # new_lon = city_data['lon']
+    #
+    # x = City.objects.create(name=new_city_name,latitude=new_lat,longitude=new_lon)
+
+    # return x
     pass
 
 
@@ -203,6 +211,8 @@ def api_call_new_city(city):
 
 def api_call():
     prev = False
+    key = keys()
+    wkey = key[1]
     try:
         x = Report.objects.all()
         z = x[0]
@@ -233,118 +243,21 @@ def api_call():
         lat = c.latitude
         lon = c.longitude
 
-        url = "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units=metric&exclude=current,minutely&appid=2ceb2c7d0e1944d0cde4c275144dfdde"
+        url = "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units=metric&exclude=current,minutely&appid={}"
 
-        city_weather = requests.get(url.format(lat,lon)).json()
+        city_weather = requests.get(url.format(lat,lon,wkey)).json()
 
     return city_weather
 
 
-#
-#     #### Copied from weather_api_report:    ####### Fix #######
-#     day = precip_percentage()
-#     city_weather = day[5]
-#
-#     weather = {
-#         'lat':city_weather['lat'],
-#         'lon':city_weather['lon'],
-#         'morning_temp':city_weather['daily'][0]['temp']['morn'],
-#         'afternoon_temp':city_weather['daily'][0]['temp']['day'],
-#         'description':city_weather['daily'][0]['weather'][0]['description'],
-#         'evening_temp':city_weather['daily'][0]['temp']['eve'],
-#         'precip_now_dt':city_weather['hourly'][0]['dt'],
-#         'precip_plus1_dt':city_weather['hourly'][1]['dt'],
-#     }
-#
-#     la = weather.get('lat')
-#     lo = weather.get('lon')
-#     current_city = get_city(la,lo)
-#     city_name = current_city.name
-#
-#     precip = {
-#         'am': day[0],
-#         'pm': day[1],
-#         'eve': day[4],
-#     }
-#     times = {
-#         'current_city': current_city,
-#         'city_name': city_name,
-#         'precip_now_time':
-#         datetime.datetime.utcfromtimestamp(float(weather.get('precip_now_dt'))),
-#         'precip_plus1_time':
-#         datetime.datetime.utcfromtimestamp(float(weather.get('precip_plus1_dt'))),
-#     }
-#     context = {'weather':weather,'times':times,'precip':precip}
-#     # return context
+def keys():
+    file = open(K,'r')
+    x = file.readlines()
+    o_c_1 = x[0]
+    o_w_1 = x[1]
 
+    o_c = o_c_1[:32]
+    o_w = o_w_1[:32]
 
-# def create_city_report(city):
-#
-#     a = Am.objects.all()
-#     a.delete()
-#     p = Pm.objects.all()
-#     p.delete()
-#     e = Eve.objects.all()
-#     e.delete()
-#
-#     date_today = datetime.date.today()
-#     api_report = generate_city_weather() ## returns context dictionary
-#     temps = api_report.get('weather')
-#     precs = api_report.get('precip')
-#     times = api_report.get('times')
-#
-#     am_temp = temps.get('morning_temp')
-#     pm_temp = temps.get('afternoon_temp')
-#     day_outlook = temps.get('description')
-#     current_city = times.get('current_city')
-#     city_name = times.get('city_name')
-#     eve = temps.get('evening_temp')
-#
-#     am_prec = precs.get('am')
-#     pm_prec = precs.get('pm')
-#     eve_prec = precs.get('eve')
-#
-#     am_obj = Am.objects.get_or_create(date=date_today,temp=am_temp,prec=am_prec)[0]
-#     pm_obj = Pm.objects.get_or_create(date=date_today,temp=pm_temp,prec=pm_prec)[0]
-#     eve_obj = Eve.objects.get_or_create(date=date_today,temp=eve,prec=eve_prec)[0]
-#
-#     daily_report = Report.objects.get_or_create(date=date_today,city=current_city,outlook=day_outlook,eve_temp=eve,am=am_obj,pm=pm_obj,eve=eve_obj)[0]
-#     daily_report.save()
-#
-#     return
-#     # return(print(f"Report for {date_today} generated"))
-#     pass
-
-
-# def generate_or_display():
-#     y_date = datetime.date.fromordinal(datetime.date.today().toordinal()-1)
-#     today = datetime.date.today()
-#     yest = False
-#
-#     try:
-#         x = Report.objects.get(date=y_date)
-#         a = Am.objects.get(date=y_date)
-#         p = Pm.objects.get(date=y_date)
-#         e = Eve.objects.get(date=y_date)
-#         city = City.objects.get(id=x.city)
-#         yest = True
-#     except:
-#         yest = False
-#
-#     if yest == True:
-#         x.delete()
-#         a.delete()
-#         p.delete()
-#         e.delete()
-#         create_daily_report(city)
-#         yest = False
-#
-#     if yest == False:
-#         try:
-#             y = Report.objects.get(date=today)
-#         except:
-#             create_daily_report()
-#             y = Report.objects.get(date=today)
-#
-#     object = y
-#     return object
+    file.close()
+    return (o_c,o_w)
