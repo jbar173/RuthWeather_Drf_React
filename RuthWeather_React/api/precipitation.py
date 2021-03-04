@@ -1,5 +1,6 @@
 import requests
 import datetime
+import urllib.parse
 
 from .models import City,Am,Pm,Eve,Report
 from RuthWeather_React.settings import K
@@ -178,17 +179,16 @@ def get_city(a,b):
 def generate_new_city(new_city_name):
     key = keys()
     ckey = key[0]
+    city_encoded = urllib.parse.quote(new_city_name)
 
     url = 'https://api.opencagedata.com/geocode/v1/json?q={}&key={}'
     city_data = requests.get(url.format(new_city_name,ckey)).json()
 
-    # new_lat = city_data['lat']
-    # new_lon = city_data['lon']
-    #
-    # x = City.objects.create(name=new_city_name,latitude=new_lat,longitude=new_lon)
-
-    # return x
-    pass
+    new_lat = city_data['results'][0]['geometry']['lat']
+    new_lon = city_data['results'][0]['geometry']['lng']
+    x = City.objects.create(name=new_city_name,latitude=new_lat,longitude=new_lon)
+    # print(f"x.name: {x.name},x.latitude: {x.latitude},x.longitude: {x.longitude},type(x): {type(x)}")
+    return x
 
 
 ###### Api Call functions: ######
@@ -216,10 +216,7 @@ def api_call():
     try:
         x = Report.objects.all()
         z = x[0]
-        print(f"z: {z.city}")
         r_city = z.city
-        print(f"r_city: {r_city}")
-        print(f"r_city type: {type(r_city)}")
         a = Am.objects.all()
         b = a[0]
         p = Pm.objects.all()

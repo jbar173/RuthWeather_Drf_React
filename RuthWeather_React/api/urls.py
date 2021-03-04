@@ -5,6 +5,7 @@ urlpatterns = [
 
     path('',views.apiOverview, name = "api-overview"),
     path('report-main',views.weather_today, name = "report-main"),
+    path('city-list',views.cityList, name = "city-list"),
 
     path('city-detail/<str:pk>/',views.cityDetail, name = "city-detail"),
     path('am-detail/<str:pk>/',views.amDetail, name = "am-detail"),

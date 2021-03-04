@@ -13,7 +13,6 @@ from .precipitation import (api_call,precip_calculator,precip_am_pm,
                             precip_percentage,render_api_data,
                             create_daily_reports,)
 
-
 # Create your views here.
 
 
@@ -21,6 +20,7 @@ from .precipitation import (api_call,precip_calculator,precip_am_pm,
 def apiOverview(request):
     api_urls = {
         'Weather report details':'/report-main/',
+        'List of cities':'/city-list/',
         'City Detail view':'/city-detail/<str:pk>/',
         'Am detail view':'/am-detail/<str:pk>/',
         'Pm detail view':'/pm-detail/<str:pk>/',
@@ -31,7 +31,7 @@ def apiOverview(request):
 
 @api_view(['GET','POST',])
 def weather_today(request):
-    find_city = forms.CityForm
+    create_city = forms.CreateCityForm
 
     if request.method == 'GET':
         a = api_call()
@@ -43,30 +43,33 @@ def weather_today(request):
         serializer = ReportSerializer(reports,many=False)
 
     # if request.method == 'POST':
-    #     find_city = forms.CityForm
+    #     city_selected = forms.ChooseCity (onclick citylist item?)
     #
-    #     if find_city.is_valid():
-            # find_city.name = name
+    #     create_city = forms.CreateCityForm
+    #
+    #     if city_selected:
+            # city_object = get_city_from_name(name)
+            # if city_object:
+               # a = api_call_new_city(city_object)
+    #     else:
+            # if create_city.data.is_valid():
+                # create_city.name = new_city_name
+                # a = api_call_new_city(new_city_name)
 
-            # 1. Try to find the city:
+    #     b = precip_calculator(18,a)
+    #     c = precip_am_pm(b)
+    #     d = precip_percentage(c)
+    #     e = render_api_data(d)
+    #     reports = create_daily_reports(e)
+    #     serializer = ReportSerializer(reports,many=False)
 
-               # city_object = get_city_from_name(name)
-               # if city_object:
-                 # a = api_call_new_city(city_object)
-               # else:
-                 # create new city object:-
-                 # new_city_object = generate_new_city(name)
-                 # a = api_call_new_city(new_city_object)
+    return Response(serializer.data)
 
-            # 2:
 
-                # b = precip_calculator(18,a)
-                # c = precip_am_pm(b)
-                # d = precip_percentage(c)
-                # e = render_api_data(d)
-                # reports = create_daily_reports(e)
-                # serializer = ReportSerializer(reports,many=False)
-
+@api_view(['GET',])
+def cityList(request):
+    cities = City.objects.all().order_by('-id')
+    serializer = CitySerializer(cities,many=True)
     return Response(serializer.data)
 
 
