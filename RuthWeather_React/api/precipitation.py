@@ -52,14 +52,16 @@ def create_daily_reports(api_report):
     pm_obj = Pm.objects.get_or_create(date=date_today,temp=pm_temp,prec=pm_prec)[0]
     eve_obj = Eve.objects.get_or_create(date=date_today,temp=eve,prec=eve_prec)[0]
 
-    daily_report = Report.objects.get_or_create(date=date_today,city=current_city,outlook=day_outlook,eve_temp=eve,am=am_obj,pm=pm_obj,eve=eve_obj)[0]
+    daily_report = Report.objects.get_or_create(date=date_today,city=current_city,
+    outlook=day_outlook,eve_temp=eve,am=am_obj,pm=pm_obj,eve=eve_obj)[0]
+
     daily_report.save()
     print(f"Report for {date_today} generated")
 
     return daily_report
 
 
-def render_api_data(day):
+def render_api_data(day,city):
 
     city_weather = day[6]
 
@@ -74,9 +76,7 @@ def render_api_data(day):
         'precip_plus1_dt':city_weather['hourly'][1]['dt'],
     }
 
-    la = weather.get('lat')
-    lo = weather.get('lon')
-    current_city = get_city(la,lo)
+    current_city = city
     city_name = current_city.name
 
     precip = {
@@ -100,7 +100,6 @@ def render_api_data(day):
 def get_city(a,b):
     x = City.objects.get(latitude=a,longitude=b)
     return x
-
 
 def get_city_from_name(name):
     try:
@@ -171,23 +170,22 @@ def precip_calculator(num,city_weather):
     return (precip_list,city_weather)
 
 
-def get_city(a,b):
-    x = City.objects.get(latitude=a,longitude=b)
-    return x
-
-
 def generate_new_city(new_city_name):
+    print(f"new_city_name: {new_city_name}, type(new_city_name): {type(new_city_name)}")
+    city_name = new_city_name['city']
+    print(f"city_name: {city_name}")
     key = keys()
     ckey = key[0]
-    city_encoded = urllib.parse.quote(new_city_name)
+    city_encoded = urllib.parse.quote(city_name)
+    print(f"urlencoded city_encoded: {city_encoded}")
 
     url = 'https://api.opencagedata.com/geocode/v1/json?q={}&key={}'
-    city_data = requests.get(url.format(new_city_name,ckey)).json()
+    city_data = requests.get(url.format(city_encoded,ckey)).json()
 
     new_lat = city_data['results'][0]['geometry']['lat']
     new_lon = city_data['results'][0]['geometry']['lng']
-    x = City.objects.create(name=new_city_name,latitude=new_lat,longitude=new_lon)
-    # print(f"x.name: {x.name},x.latitude: {x.latitude},x.longitude: {x.longitude},type(x): {type(x)}")
+    x = City.objects.create(name=city_name,latitude=new_lat,longitude=new_lon)
+    print(f"x.name: {x.name},x.latitude: {x.latitude},x.longitude: {x.longitude}, type(x): {type(x)}")
     return x
 
 
@@ -197,13 +195,33 @@ def generate_new_city(new_city_name):
 
 def api_call_new_city(city):
 
-    c = City.objects.get(id=city)
+    c = City.objects.get(id=city.id)
     lat = c.latitude
     lon = c.longitude
 
-    url = "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units=metric&exclude=current,minutely&appid=2ceb2c7d0e1944d0cde4c275144dfdde"
+    try:
+        x = Report.objects.all()
+        z = x[0]
+        z.delete()
+        a = Am.objects.all()
+        b = a[0]
+        b.delete()
+        p = Pm.objects.all()
+        q = p[0]
+        q.delete()
+        e = Eve.objects.all()
+        f = e[0]
+        f.delete()
+    except:
+        print("No prev reports found")
 
-    city_weather = requests.get(url.format(lat,lon)).json()
+    key = keys()
+    wkey = key[1]
+
+
+    url = "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units=metric&exclude=current,minutely&appid={}"
+
+    city_weather = requests.get(url.format(lat,lon,wkey)).json()
 
     return city_weather
 
@@ -244,7 +262,7 @@ def api_call():
 
         city_weather = requests.get(url.format(lat,lon,wkey)).json()
 
-    return city_weather
+    return (city_weather,c)
 
 
 def keys():
