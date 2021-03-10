@@ -6,30 +6,6 @@ from .models import City,Am,Pm,Eve,Report
 from RuthWeather_React.settings import K
 
 
-########## LOGIC #############
-
-#### *** Api call first: *** ####
-
-    #### if response == GET:
-        # a = api_call()
-
-    # or:
-    #### if response == POST:
-        # 1. find city object('name' data from form)
-        # 2. create new city object if not found
-        # then:
-            # a = api_call_new_city(city object)
-
-##### *** finally: *** #####
-
-    ###### b = precip_calculator(18,a)
-    ###### c = precip_am_pm(b)
-    ###### d = precip_percentage(c)
-    ###### e = render_api_data(d)
-    ###### f = create_daily_reports(e)
-
-#####################################################
-
 def create_daily_reports(api_report):
 
     date_today = datetime.date.today()
@@ -96,18 +72,31 @@ def render_api_data(day,city):
 
     return context
 
+def delete_cities():
+    r = Report.objects.all()
+    res = r[0]
+    keep = res.city
+    print(f"res.city: {res.city}")
+    x = City.objects.all()
+    for city in x:
+        if city == res.city:
+            print(f"city (res): {city}")
+            continue
+        else:
+            print(f"city (not res): {city}")
+            city.delete()
 
 def get_city(a,b):
     x = City.objects.get(latitude=a,longitude=b)
     return x
 
 def get_city_from_name(name):
+    w = name['city']
     try:
-        x = City.objects.get(name=name)
+        x = City.objects.get(name=w)
         return x
     except:
         return False
-
 
 def precip_percentage(day):
 
@@ -254,7 +243,7 @@ def api_call():
 
     if prev == False:
         c = r_city
-        # c = City.objects.get(id=1)  ## York
+        # c = City.objects.get(id=1)
         lat = c.latitude
         lon = c.longitude
 

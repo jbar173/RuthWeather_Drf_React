@@ -11,7 +11,8 @@ import datetime
 from .precipitation import (api_call,precip_calculator,precip_am_pm,
                             precip_percentage,render_api_data,
                             create_daily_reports,get_city_from_name,
-                            generate_new_city,api_call_new_city,)
+                            generate_new_city,api_call_new_city,
+                            delete_cities,)
 
 # Create your views here.
 
@@ -46,33 +47,47 @@ def weather_today(request):
 
     if request.method == 'POST':
         city_name = request.data
-        print(f"city_name *1: {city_name}")
+        print(f"city_name: {city_name}")
+        c = city_name['city']
+        print(f"c: {c}")
+        # res = c.name
 
-        # try:
-        city_update = get_city_from_name(city_name)
-
-        if city_update:
-            a = api_call_new_city(city_update)
+        if c == 'true':
+            delete_cities()
+            x = api_call()
+            z = x[1]
+            a = x[0]
             b = precip_calculator(18,a)
             c = precip_am_pm(b)
             d = precip_percentage(c)
-            e = render_api_data(d,city_update)
+            e = render_api_data(d,z)
             reports = create_daily_reports(e)
             serializer = ReportSerializer(reports,many=False)
             return Response(serializer.data)
 
-        # except:
         else:
-            x = generate_new_city(city_name)
-            print(f"new_city(x): {x.name}, {type(x)}, id: {x.id}")
-            a = api_call_new_city(x)
-            b = precip_calculator(18,a)
-            c = precip_am_pm(b)
-            d = precip_percentage(c)
-            e = render_api_data(d,x)
-            reports = create_daily_reports(e)
-            serializer = ReportSerializer(reports,many=False)
-            return Response(serializer.data)
+            city_update = get_city_from_name(city_name)
+
+            if city_update:
+                a = api_call_new_city(city_update)
+                b = precip_calculator(18,a)
+                c = precip_am_pm(b)
+                d = precip_percentage(c)
+                e = render_api_data(d,city_update)
+                reports = create_daily_reports(e)
+                serializer = ReportSerializer(reports,many=False)
+                return Response(serializer.data)
+
+            else:
+                x = generate_new_city(city_name)
+                a = api_call_new_city(x)
+                b = precip_calculator(18,a)
+                c = precip_am_pm(b)
+                d = precip_percentage(c)
+                e = render_api_data(d,x)
+                reports = create_daily_reports(e)
+                serializer = ReportSerializer(reports,many=False)
+                return Response(serializer.data)
 
 
 @api_view(['GET',])
