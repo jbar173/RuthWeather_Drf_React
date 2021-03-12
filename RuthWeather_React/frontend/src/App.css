@@ -1,0 +1,179 @@
+* {
+  box-sizing: border-box;
+}
+
+.col-1 {width: 8.33%; float: left; padding: 15px;}
+.col-2 {width: 16.66%;float: left; padding: 15px;}
+.col-3 {width: 25%;float: left; padding: 15px;}
+.col-4 {width: 33.33%;float: left; padding: 15px;}
+.col-5 {width: 41.66%;float: left; padding: 15px;}
+.col-6-l {width: 47%; float: left; padding: 15px;margin-right: 3%;}
+.col-6-r {width: 47%; float: left; padding: 15px;margin-left: 3%;}
+.col-7 {width: 58.33%;float: left; padding: 15px;}
+.col-8 {width: 66.66%;float: left; padding: 15px;}
+.col-9 {width: 75%;float: left; padding: 15px;}
+.col-10 {width: 83.33%;float: left; padding: 15px;}
+.col-11 {width: 91.66%;float: left; padding: 15px;}
+.col-12 {width: 100%; float: left; padding: 15px;}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* xs screens: */
+@media only screen and (max-width: 768px) {
+  [class*="col-"] {
+    width: 100%;
+    margin-bottom: 5%;
+    margin-left: 0%;
+    margin-right: 0%;
+  }
+}
+
+.day-mode{
+  background-image: url('blue-sky.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  font-family: 'Amatic+SC',sans-serif;
+  color: black;
+}
+
+.night-mode{
+  background-image: url('nightmode.jfif');
+  background-size: cover;
+  background-position: center;
+  font-family: 'Amatic+SC',sans-serif;
+  color: grey;
+}
+
+#button-day{
+  font-size: 1.1em;
+  color: black;
+  background-color: lightblue;
+  border-color:lightblue;
+  border-radius: 5px;
+}
+
+#button-night{
+  font-size: 1.1em;
+  color: grey;
+  background-color: black;
+  border-radius: 5px;
+}
+
+.moon:hover{
+  filter: invert(55%);
+}
+
+.sun:hover{
+  color: lightgrey;
+}
+
+.moon{
+  filter: invert(80%);
+  font-size: 3em;
+  padding: 10px 10px 10px 10px;
+  border: 1px solid darkred;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.sun{
+  font-size: 3em;
+  padding: 10px 10px 10px 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.slider{
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.button-border-day{
+  border: 1px solid lightblue;
+  display: inline;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+}
+
+.button-day-size{
+  font-size: 1.1em;
+  background-color: lightblue;
+  border-bottom: 2px solid grey;
+  border-right: 2px solid grey;
+}
+
+.clear-city-day{
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.button-border-night{
+  border: 1px solid grey;
+  display: inline;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+}
+
+.city-list{
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.new-city{
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.button-padding{
+  margin-top: 40px
+}
+
+.margin-top{
+  margin-top:30px;
+}
+
+.outer{
+  padding:60px 110px 100px 110px;
+  border: 2px solid lightblue;
+  border-radius: 10px;
+}
+
+.outline{
+  padding:10px 10px 15px 10px;
+  margin: 40px 40px 40px 40px;
+  border: 1px solid lightblue;
+  border-radius: 10px;
+}
+
+.title{
+  border: 2px solid lightblue;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.info{
+  width:100%;
+  height:100%;
+}
+
+.left-column{
+  border: 2px solid lightblue;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.right-column{
+  border: 2px solid lightblue;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 70px;
+  padding-bottom: 120px;
+}
