@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-K_DIR = Path(__file__).resolve().parent.parent.parent.parent
+K_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
 K = Path(K_DIR,'Api_keys/a_keys.py').joinpath()
 
 # Quick-start development settings - unsuitable for production

@@ -243,7 +243,8 @@ def api_call():
 
     if prev == False:
         c = r_city
-        # c = City.objects.get(id=1)
+        # c_list = City.objects.all()
+        # c = c_list[0]
         lat = c.latitude
         lon = c.longitude
 
